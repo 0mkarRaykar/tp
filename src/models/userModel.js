@@ -21,6 +21,28 @@ const userSchema = new Schema(
       type: String,
       required: [true, "Password is required"],
     },
+    mobileNumber: {
+      type: String,
+      required: true,
+    },
+    role: {
+      type: String,
+      enum: ["SuperAdmin", "DistrictAdmin", "FacilityAdmin", "DepartmentUser"],
+      default: "DepartmentUser",
+    },
+    status: {
+      type: String,
+      enum: ["Active", "Inactive"],
+      default: "Active",
+    },
+    assignedFacility: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Facility",
+    },
+    createdAt: {
+      type: Date,
+      default: Date.now,
+    },
     refreshToken: {
       type: String,
     },

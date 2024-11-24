@@ -73,9 +73,13 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 });
 
 const registerUser = asyncHandler(async (req, res) => {
-  const { email, fullName, password } = req.body;
- 
-  if ([email, fullName, password].some((field) => field?.trim() === "")) {
+  const { email, fullName, password, mobileNumber } = req.body;
+
+  if (
+    [email, fullName, password, mobileNumber].some(
+      (field) => field?.trim() === ""
+    )
+  ) {
     throw new ApiError(400, "All field are required");
   }
 
@@ -90,6 +94,7 @@ const registerUser = asyncHandler(async (req, res) => {
     fullName,
     email,
     password,
+    mobileNumber,
   });
 
   const createdUser = await User.findById(user._id).select(
@@ -174,4 +179,28 @@ const logoutUser = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, {}, "User logged Out"));
 });
 
-export { registerUser, loginUser, logoutUser, refreshAccessToken };
+const changeCurrentPassword = asyncHandler(async (req, res) => {
+  const { oldPassword, newPassword } = req.body;
+
+  const user = await User.findById(req.user?._id);
+  const isPasswordCorrect = await user.isPasswordCorrect(oldPassword);
+
+  if (!isPasswordCorrect) {
+    throw new ApiError(400, "Invalid old password");
+  }
+
+  user.password = newPassword;
+  await user.save({ validateBeforeSave: false });
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, {}, "Password changed successfully"));
+});
+
+export {
+  registerUser,
+  loginUser,
+  logoutUser,
+  changeCurrentPassword,
+  refreshAccessToken,
+};
