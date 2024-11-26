@@ -6,6 +6,7 @@ import { User } from "../models/userModel.js";
 
 import jwt from "jsonwebtoken";
 
+// @desc     generate access and refresh token
 const generateAccessAndRefreshTokens = async (userId) => {
   try {
     const user = await User.findById(userId);
@@ -24,6 +25,9 @@ const generateAccessAndRefreshTokens = async (userId) => {
   }
 };
 
+// @desc     refresh the access token
+// route     POST api/v1/auths/refresh-token
+// @accesss  Private
 const refreshAccessToken = asyncHandler(async (req, res) => {
   const incomingRefreshToken =
     req.cookies.refreshToken || req.body.refreshToken;
@@ -72,11 +76,14 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
   }
 });
 
+// @desc     Register a new user
+// route     POST api/v1/auths/register
+// @accesss  Public
 const registerUser = asyncHandler(async (req, res) => {
-  const { email, fullName, password, mobileNumber } = req.body;
+  const { email, fullName, password, mobileNumber, role } = req.body;
 
   if (
-    [email, fullName, password, mobileNumber].some(
+    [email, fullName, password, mobileNumber, role].some(
       (field) => field?.trim() === ""
     )
   ) {
@@ -95,6 +102,7 @@ const registerUser = asyncHandler(async (req, res) => {
     email,
     password,
     mobileNumber,
+    role,
   });
 
   const createdUser = await User.findById(user._id).select(
@@ -109,6 +117,9 @@ const registerUser = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, createdUser, "User registered Successfully"));
 });
 
+// @desc     Login a new user
+// route     POST api/v1/auths/login
+// @accesss  Public
 const loginUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
 
@@ -116,8 +127,11 @@ const loginUser = asyncHandler(async (req, res) => {
     throw new ApiError(400, "email is required");
   }
 
+  // Find the user with the given email, ensuring they are active and not deleted
   const user = await User.findOne({
-    $or: [{ email }],
+    email,
+    isActive: true,
+    isDeleted: false,
   });
 
   if (!user) {
@@ -155,6 +169,9 @@ const loginUser = asyncHandler(async (req, res) => {
     );
 });
 
+// @desc     Logout a new user
+// route     POST api/v1/auths/logout
+// @accesss  Private
 const logoutUser = asyncHandler(async (req, res) => {
   await User.findByIdAndUpdate(
     req.user._id,
@@ -179,6 +196,9 @@ const logoutUser = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, {}, "User logged Out"));
 });
 
+// @desc     Change Password
+// route     POST api/v1/auths/change-password
+// @accesss  Private
 const changeCurrentPassword = asyncHandler(async (req, res) => {
   const { oldPassword, newPassword } = req.body;
 

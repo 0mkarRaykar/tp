@@ -30,10 +30,13 @@ const userSchema = new Schema(
       enum: ["SuperAdmin", "DistrictAdmin", "FacilityAdmin", "DepartmentUser"],
       default: "DepartmentUser",
     },
-    status: {
-      type: String,
-      enum: ["Active", "Inactive"],
-      default: "Active",
+    isActive: {
+      type: Boolean,
+      default: true,
+    },
+    isDeleted: {
+      type: Boolean,
+      default: false,
     },
     assignedFacility: {
       type: mongoose.Schema.Types.ObjectId,
