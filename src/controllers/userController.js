@@ -83,7 +83,7 @@ const getUserById = asyncHandler(async (req, res) => {
 });
 
 // @desc     update user by Id from db
-// route     POST api/v1/users/{id}
+// route     PATCH api/v1/users/{id}
 // @accesss  Private
 const updateUser = asyncHandler(async (req, res) => {
   const { userId } = req.params;

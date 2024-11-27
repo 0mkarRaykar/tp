@@ -1,35 +1,39 @@
-const FacilitySchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true,
-  },
-  address: {
-    type: String,
-    required: true,
-  },
-  district: {
-    type: String,
-    required: true,
-  },
-  state: {
-    type: String,
-    required: true,
-  },
-  type: {
-    type: String,
-    enum: ["Hospital", "Clinic", "Health Center"],
-    required: true,
-  },
-  departments: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Department",
-    },
-  ],
-  createdAt: {
-    type: Date,
-    default: Date.now,
-  },
-});
+import mongoose, { Schema } from "mongoose";
 
-module.exports = mongoose.model("Facility", FacilitySchema);
+const FacilitySchema = new Schema(
+  {
+    name: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    address: {
+      state: {
+        type: String,
+        required: true,
+      },
+      city: {
+        type: String,
+        required: true,
+      },
+      pincode: {
+        type: String,
+        required: true,
+      },
+    },
+    type: {
+      type: String,
+      enum: ["Hospital", "Clinic", "Health Center"],
+      required: true,
+    },
+    createdAt: {
+      type: Date,
+      default: Date.now,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+
+export const Facility = mongoose.model("facility", FacilitySchema);
