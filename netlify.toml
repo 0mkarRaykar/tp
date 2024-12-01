@@ -1,6 +1,5 @@
 [build]
   functions = "src/functions"
-  publish = "dist"
 
 [build.environment]
   NODE_ENV = "production"
