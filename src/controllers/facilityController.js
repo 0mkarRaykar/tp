@@ -46,7 +46,7 @@ const createFacility = asyncHandler(async (req, res) => {
 // @desc     fetch all facility from db (role based fetching)
 // route     GET api/v1/facility/getAllFacility
 // @accesss  Private
-const getFacility = asyncHandler(async (req, res) => {
+const getAllFacility = asyncHandler(async (req, res) => {
   try {
     // fetch the role of the requesting user
     const requestingUser = await User.findById(req.user._id);
@@ -61,7 +61,7 @@ const getFacility = asyncHandler(async (req, res) => {
     }
 
     // Fetch users based on the role filter, active status, and non-deleted status
-    const users = await User.find({
+    const users = await Facility.find({
       ...roleFilter,
       isActive: true,
       isDeleted: false,
@@ -111,16 +111,65 @@ const updateFacility = asyncHandler(async (req, res) => {
   if (!isValidObjectId(facilityId)) {
     throw new ApiError(400, "Invalid facility ID");
   }
+  // Prepare the update object
+  const updateData = {};
+  if (name) updateData.name = name;
+  if (address) updateData.address = address;
+  if (type) updateData.type = type;
+
+  // update user
+  const updatedFacility = await Facility.findByIdAndUpdate(
+    facilityId,
+    updateData,
+    {
+      new: true,
+    }
+  );
+
+  // check if facility was found and update
+  if (!updatedFacility) {
+    throw new ApiError(404, "Facility not found");
+  }
+
+  // return the updated facility details
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(200, updatedFacility, "Facility updated successfully")
+    );
 });
 
 // @desc     delete facility by Id from db (soft-delete & role based)
 // route     POST api/v1/facility/{id}
 // @accesss  Private
-const deleteFacility = asyncHandler(async (req, res) => {});
+const deleteFacility = asyncHandler(async (req, res) => {
+  const { facilityId } = req.params;
+
+  // validate the facilityId
+  if (!isValidObjectId(facilityId)) {
+    throw new ApiError(400, "Invalid facility ID");
+  }
+
+  // Delete the facility (soft delete)
+  const facility = await Facility.findByIdAndUpdate(
+    facilityId,
+    { isDeleted: true },
+    { new: true }
+  );
+
+  if (!facility) {
+    throw new ApiError(404, "Facility not found");
+  }
+
+  //return success message
+  return res
+    .status(200)
+    .json(new ApiResponse(200, "", "Facility deleted successfully"));
+});
 
 export {
   createFacility,
-  getFacility,
+  getAllFacility,
   getFacilityById,
   updateFacility,
   deleteFacility,

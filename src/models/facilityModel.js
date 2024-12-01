@@ -26,6 +26,14 @@ const FacilitySchema = new Schema(
       enum: ["Hospital", "Clinic", "Health Center"],
       required: true,
     },
+    isActive: {
+      type: Boolean,
+      default: true,
+    },
+    isDeleted: {
+      type: Boolean,
+      default: false,
+    },
     createdAt: {
       type: Date,
       default: Date.now,
