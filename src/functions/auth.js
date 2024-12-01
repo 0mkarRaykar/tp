@@ -52,9 +52,10 @@ const loginUser = async (event) => {
       body: JSON.stringify(new ApiResponse(200, { accessToken, refreshToken }, "Login successful")),
     };
   } catch (error) {
+    console.error("Error in loginUser:", error); // Add this
     return {
       statusCode: error.statusCode || 500,
-      body: JSON.stringify(new ApiError(error.statusCode || 500, error.message || "Internal Server Error")),
+      body: JSON.stringify({ message: error.message || "Internal server error" }),
     };
   }
 };
@@ -89,9 +90,10 @@ const refreshAccessToken = async (event) => {
       body: JSON.stringify(new ApiResponse(200, { accessToken, refreshToken: newRefreshToken }, "Token refreshed")),
     };
   } catch (error) {
+    console.error("Error in refreshtokrn:", error); // Add this
     return {
-      statusCode: 401,
-      body: JSON.stringify(new ApiError(401, "Invalid refresh token")),
+      statusCode: error.statusCode || 500,
+      body: JSON.stringify({ message: error.message || "Internal server error" }),
     };
   }
 };
@@ -111,9 +113,10 @@ export const handler = async (event) => {
       body: JSON.stringify({ message: "Route not found" }),
     };
   } catch (error) {
+    console.error("Unhandled error in handler:", error); // Add detailed logging
     return {
       statusCode: 500,
-      body: JSON.stringify(new ApiError(500, "Server error")),
+      body: JSON.stringify({ message: "Internal server error", error: error.message }),
     };
   }
 };
