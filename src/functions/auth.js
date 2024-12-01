@@ -23,7 +23,7 @@ const generateAccessAndRefreshTokens = async (userId) => {
 // @desc     User login and generate tokens
 // @route    POST /api/v1/auths/login
 // @access   Public
-export const loginUser = asyncHandler(async (event, context) => {
+const loginUser = asyncHandler(async (event, context) => {
   const { email, password } = JSON.parse(event.body);
 
   if (!email || !password) {
@@ -60,7 +60,7 @@ export const loginUser = asyncHandler(async (event, context) => {
 // @desc     Refresh the access token
 // @route    POST /api/v1/auths/refresh-token
 // @access   Private
-export const refreshAccessToken = asyncHandler(async (event, context) => {
+const refreshAccessToken = asyncHandler(async (event, context) => {
   const incomingRefreshToken =
     event.headers['refreshToken'] || JSON.parse(event.body)?.refreshToken;
 
@@ -99,3 +99,18 @@ export const refreshAccessToken = asyncHandler(async (event, context) => {
     throw new ApiError(401, error?.message || "Invalid refresh token");
   }
 });
+
+// Export the handler for Netlify
+export const handler = async (event, context) => {
+  // Handle different paths based on the event path
+  if (event.httpMethod === 'POST' && event.path === '/api/v1/auths/login') {
+    return await loginUser(event, context);
+  } else if (event.httpMethod === 'POST' && event.path === '/api/v1/auths/refresh-token') {
+    return await refreshAccessToken(event, context);
+  }
+
+  return {
+    statusCode: 404,
+    body: JSON.stringify({ message: 'Route not found' }),
+  };
+};
