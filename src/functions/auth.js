@@ -2,7 +2,28 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { User } from "../models/userModel.js";
 import jwt from "jsonwebtoken";
-import connectDB from "../utils/connectDB.js"
+import mongoose from "mongoose";
+
+// Define connectDB function directly in auth.js
+const connectDB = async () => {
+  try {
+    // Replace with your MongoDB URI and database name
+    const dbURI = process.env.MONGODB_URI; // Your MongoDB URI
+    const dbName = process.env.DB_NAME;    // Your DB Name
+
+    await mongoose.connect(dbURI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      dbName: dbName,
+    });
+
+    console.log("MongoDB connected successfully!");
+  } catch (error) {
+    console.error("Database connection error:", error);
+    throw new ApiError(500, "Database connection failed");
+  }
+};
+
 const generateAccessAndRefreshTokens = async (userId) => {
   try {
     await connectDB(); // Ensure the connection is established
