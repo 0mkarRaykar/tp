@@ -103,9 +103,9 @@ const refreshAccessToken = asyncHandler(async (event, context) => {
 // Export the handler for Netlify
 export const handler = async (event, context) => {
   // Handle different paths based on the event path
-  if (event.httpMethod === 'POST' && event.path === '/api/v1/auths/login') {
+  if (event.httpMethod === 'POST' && event.path === '/.netlify/functions/auth/login') {
     return await loginUser(event, context);
-  } else if (event.httpMethod === 'POST' && event.path === '/api/v1/auths/refresh-token') {
+  } else if (event.httpMethod === 'POST' && event.path === '/.netlify/functions/auth/register') {
     return await refreshAccessToken(event, context);
   }
 
