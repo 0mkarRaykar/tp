@@ -2,9 +2,10 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { User } from "../models/userModel.js";
 import jwt from "jsonwebtoken";
-
+import connectDB from "../utils/connectDB.js"
 const generateAccessAndRefreshTokens = async (userId) => {
   try {
+    await connectDB(); // Ensure the connection is established
     const user = await User.findById(userId);
     const accessToken = user.generateAccessToken(); // Assuming this is a method on the User model
     const refreshToken = user.generateRefreshToken(); // Assuming this is a method on the User model
@@ -20,6 +21,9 @@ const generateAccessAndRefreshTokens = async (userId) => {
 
 const loginUser = async (event) => {
   try {
+
+    await connectDB(); // Ensure the connection is established
+
     const { email, password } = JSON.parse(event.body);
 
     if (!email || !password) {
@@ -62,6 +66,8 @@ const loginUser = async (event) => {
 
 const refreshAccessToken = async (event) => {
   try {
+    await connectDB(); // Ensure the connection is established
+
     const incomingRefreshToken =
       event.headers['refreshToken'] || JSON.parse(event.body)?.refreshToken;
 
