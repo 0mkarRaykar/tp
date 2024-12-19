@@ -129,10 +129,22 @@ export const handler = async (event) => {
   try {
     const path = event.path.split('/').pop(); // Extract last part of path
 
+    // Route for login
     if (event.httpMethod === 'POST' && path === 'login') {
       return await loginUser(event);
-    } else if (event.httpMethod === 'POST' && path === 'refresh-token') {
+    }
+    
+    // Route for refresh token
+    else if (event.httpMethod === 'POST' && path === 'refresh-token') {
       return await refreshAccessToken(event);
+    }
+
+    // Route for root
+    else if (event.httpMethod === 'GET' && path === '') {
+      return {
+        statusCode: 200,
+        body: JSON.stringify({ message: "hello world" }),
+      };
     }
 
     return {
@@ -147,3 +159,4 @@ export const handler = async (event) => {
     };
   }
 };
+
