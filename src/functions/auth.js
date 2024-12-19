@@ -140,7 +140,7 @@ export const handler = async (event) => {
     }
 
     // Route for root
-    else if (event.httpMethod === 'GET' && path === 'test') {
+    else if (event.httpMethod === 'POST' && path === 'test') {
       return {
         statusCode: 200,
         body: JSON.stringify({ message: "hello world" }),
